@@ -44,7 +44,7 @@ object DestinasiInsert: AlamatNavigasi{
 fun InserMhsView(
     onBack: () -> Unit,
     onNavigate: () -> Unit,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     viewModel: MahasiswaViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ){
     val uiState = viewModel.uiState // Ambil UI state dari ViewModel

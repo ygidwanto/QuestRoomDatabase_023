@@ -1,32 +1,11 @@
 package com.example.myapplication.ui.view.mahasiswa
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,27 +15,27 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.myapplication.data.entity.Mahasiswa
 import com.example.myapplication.ui.costumwidget.TopAppBar
+import com.example.myapplication.ui.viewmodel.DetailMhsViewModel
 import com.example.myapplication.ui.viewmodel.DetailUiState
 import com.example.myapplication.ui.viewmodel.HomeMhsViewModel
 import com.example.myapplication.ui.viewmodel.HomeUiState
 import com.example.myapplication.ui.viewmodel.PenyediaViewModel
 import com.example.myapplication.ui.viewmodel.toMahasiswaEntity
 import kotlinx.coroutines.launch
-import java.lang.reflect.Modifier
 
 @Composable
-fun HomeMhsView(
+fun  DetailMhsView(
     viewModel: HomeMhsViewModel = viewModel(factory = PenyediaViewModel.Factory),
     onAddMhs: () -> Unit = {},
     onDetailClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
-){
-    Scaffold (
+)  {
+    Scaffold(
         topBar = {
             TopAppBar(
                 judul = "Daftar Mahasiswa",
                 showBackButton = false,
-                onBack = {},
+                onBack = {}
             )
         },
         floatingActionButton = {
@@ -64,97 +43,91 @@ fun HomeMhsView(
                 onClick = onAddMhs,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Tambah Mahasiswa"
                 )
             }
         }
-    ){innerPadding ->
+    ) { innerPadding ->
         val homeUiState by viewModel.homeUIState.collectAsState()
 
         BodyHomeMhsView(
             homeUiState = homeUiState,
-            onClick = {onDetailClick(it)
-            },
+            onClick = onDetailClick,
             modifier = Modifier.padding(innerPadding)
         )
     }
 }
+
 @Composable
 fun BodyHomeMhsView(
     homeUiState: HomeUiState,
-    onClick: (String) -> Unit = { },
+    onClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
-){
+) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
     when {
         homeUiState.isLoading -> {
-            //menampilkan indikator loading
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 CircularProgressIndicator()
             }
         }
 
         homeUiState.isError -> {
-            //menampilkan pesan error
-            LaunchedEffect(homeUiState.errorMessage)
-            {
+            LaunchedEffect(homeUiState.errorMessage) {
                 homeUiState.errorMessage?.let { message ->
                     coroutineScope.launch {
-                        snackbarHostState.showSnackbar(message) // Tampilkan Snackbar
+                        snackbarHostState.showSnackbar(message)
                     }
                 }
             }
         }
 
         homeUiState.listMhs.isEmpty() -> {
-            //menampilkan pesan jika data kosong
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
-                Text(text = "Tidak ada data Mahasiswa",
+            ) {
+                Text(
+                    text = "Tidak ada data Mahasiswa",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp))
-
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
 
         else -> {
             ListMahasiswa(
                 listMhs = homeUiState.listMhs,
-                onClick = {
-                    onClick(it)
-                    println(
-                        it
-                    )
-                },
+                onClick = onClick,
                 modifier = modifier
             )
         }
     }
 }
+
 @Composable
 fun DetailMhsView(
     modifier: Modifier = Modifier,
     viewModel: DetailMhsViewModel = androidx.lifecycle.viewmodel.compose.viewModel(factory = PenyediaViewModel.Factory),
-    onBack: () -> Unit = { },
-    onEditClick: (String) -> Unit = { },
-    onDeleteClick: () -> Unit = { }
-){
-    Scaffold (
+    onBack: () -> Unit = {},
+    onEditClick: (String) -> Unit = {},
+    onDeleteClick: () -> Unit = {}
+) {
+    Scaffold(
         topBar = {
             TopAppBar(
                 judul = "Detail Mahasiswa",
                 showBackButton = true,
-                onBack = onBack,
+                onBack = onBack
             )
         },
         floatingActionButton = {
@@ -162,19 +135,18 @@ fun DetailMhsView(
                 onClick = { onEditClick(viewModel.detailUiState.value.detailUiEvent.nim) },
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Mahasiswa"
                 )
             }
         }
-    ){  innerPadding ->
+    ) { innerPadding ->
         val detailUiState by viewModel.detailUiState.collectAsState()
 
         BodyDetailMhs(
-            modifier = Modifier
-                .padding(innerPadding),
+            modifier = Modifier.padding(innerPadding),
             detailUiState = detailUiState,
             onDeleteClick = {
                 viewModel.deleteMhs()
@@ -189,30 +161,30 @@ fun BodyDetailMhs(
     modifier: Modifier = Modifier,
     detailUiState: DetailUiState = DetailUiState(),
     onDeleteClick: () -> Unit
-){
-    var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }
+) {
+    var deleteConfirmationRequired by remember { mutableStateOf(false) }
+
     when {
         detailUiState.isLoading -> {
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator() // Tampilkan loading
+                CircularProgressIndicator()
             }
         }
 
         detailUiState.isUiEventNotEmpty -> {
             Column(
-                modifier = Modifier
+                modifier = modifier
                     .fillMaxWidth()
                     .padding(16.dp)
-
             ) {
                 ItemDetailMhs(
                     mahasiswa = detailUiState.detailUiEvent.toMahasiswaEntity(),
                     modifier = Modifier
                 )
-                Spacer(modifier = Modifier.padding(8.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Button(
                     onClick = { deleteConfirmationRequired = true },
                     modifier = Modifier.fillMaxWidth()
@@ -226,17 +198,15 @@ fun BodyDetailMhs(
                             deleteConfirmationRequired = false
                             onDeleteClick()
                         },
-                        onDeleteCancel = { deleteConfirmationRequired = false },
-                        modifier = Modifier.padding(8.dp)
+                        onDeleteCancel = { deleteConfirmationRequired = false }
                     )
                 }
-
             }
         }
 
         detailUiState.isUiEventEmpty -> {
             Box(
-                modifier = modifier.fillMaxWidth(),
+                modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -252,33 +222,28 @@ fun BodyDetailMhs(
 fun ItemDetailMhs(
     modifier: Modifier = Modifier,
     mahasiswa: Mahasiswa
-){
-    Card (
-        modifier = modifier
-            .fillMaxWidth(),
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer,
             contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-
         )
-    ){
-        Column (
-            modifier = Modifier.padding(16.dp)
-        ){
-            Spacer(modifier = Modifier.padding(20.dp))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Spacer(modifier = Modifier.height(20.dp))
             ComponentDetailMhs(judul = "NIM", isinya = mahasiswa.nim)
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ComponentDetailMhs(judul = "Nama", isinya = mahasiswa.nama)
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ComponentDetailMhs(judul = "Alamat", isinya = mahasiswa.alamat)
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ComponentDetailMhs(judul = "Jenis Kelamin", isinya = mahasiswa.jeniskelamin)
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ComponentDetailMhs(judul = "Kelas", isinya = mahasiswa.kelas)
-            Spacer(modifier = Modifier.padding(4.dp))
+            Spacer(modifier = Modifier.height(4.dp))
             ComponentDetailMhs(judul = "Angkatan", isinya = mahasiswa.angkatan)
-            Spacer(modifier = Modifier.padding(4.dp))
-
+            Spacer(modifier = Modifier.height(4.dp))
         }
     }
 }
@@ -288,12 +253,11 @@ fun ComponentDetailMhs(
     modifier: Modifier = Modifier,
     judul: String,
     isinya: String
-){
-    Column (
+) {
+    Column(
         modifier = modifier.fillMaxWidth(),
-
         horizontalAlignment = Alignment.Start
-    ){
+    ) {
         Text(
             text = "$judul :",
             fontSize = 20.sp,
@@ -313,10 +277,11 @@ private fun DeleteConfirmationDialog(
     onDeleteConfirm: () -> Unit,
     onDeleteCancel: () -> Unit,
     modifier: Modifier = Modifier
-){
-    AlertDialog(onDismissRequest = {  },
-        title = { Text("Delete Data")},
-        text = { Text("Apakah anda yakin ingin menghapus data?")},
+) {
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text("Delete Data") },
+        text = { Text("Apakah anda yakin ingin menghapus data?") },
         dismissButton = {
             TextButton(onClick = { onDeleteCancel() }) {
                 Text(text = "Cancel")

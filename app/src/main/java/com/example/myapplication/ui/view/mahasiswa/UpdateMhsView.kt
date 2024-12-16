@@ -11,15 +11,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Modifier
+
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.ui.costumwidget.TopAppBar
+import com.example.myapplication.ui.viewmodel.PenyediaViewModel
 import com.example.myapplication.ui.viewmodel.UpdateMhsViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.reflect.Modifier
+import androidx.compose.ui.Modifier
+
 
 @Composable
 fun UpdateMhsView(
@@ -33,11 +35,11 @@ fun UpdateMhsView(
     val coroutineScope = rememberCoroutineScope()
 
     // Observasi perubahan snackBarMessage
-    LaunchedEffect(uiState.snackBarMassage) {
-        uiState.snackBarMassage?.let { message ->
+    LaunchedEffect(uiState.snackBarMessage) {
+        uiState.snackBarMessage?.let { massage ->
             coroutineScope.launch {
                 snackbarHostState.showSnackbar(
-                    message = message,
+                    message = massage,
                     duration = SnackbarDuration.Long
                 )
                 viewModel.resetSnackBarMessage()  // Reset snackbar message

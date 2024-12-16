@@ -5,26 +5,28 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.myapplication.ui.navigation.AlamatNavigasi
 import com.example.myapplication.ui.view.mahasiswa.DestinasiInsert
 import com.example.myapplication.ui.view.mahasiswa.DetailMhsView
 import com.example.myapplication.ui.view.mahasiswa.HomeMhsView
 import com.example.myapplication.ui.view.mahasiswa.InserMhsView
 import com.example.myapplication.ui.view.mahasiswa.UpdateMhsView
 import androidx.compose.ui.Modifier
+import com.example.myapplication.ui.navigation.AlamatNavigasi.DestinasiDetail
+import com.example.myapplication.ui.navigation.AlamatNavigasi.DestinasiHome
+import com.example.myapplication.ui.navigation.AlamatNavigasi.DestinasiUpdate
 
 @Composable
 fun PengelolaHalaman(
     navController: NavHostController = rememberNavController(),
     modifier: Modifier = Modifier
 ) {
-    NavHost(navController = navController, startDestination = AlamatNavigasi.DestinasiHome.route) {
+    NavHost(navController = navController, startDestination = DestinasiHome.route) {
         composable(
-            route = AlamatNavigasi.DestinasiHome.route
+            route = DestinasiHome.route
         ) {
             HomeMhsView(
                 onDetailClick = { nim->
-                    navController.navigate("${AlamatNavigasi.DestinasiDetail.route}/$nim")
+                    navController.navigate("${DestinasiDetail.route}/$nim")
                     println("PengelolaHalaman: nim = $nim")
                 },
                 onAddMhs = {
@@ -49,21 +51,21 @@ fun PengelolaHalaman(
         }
 
         composable(
-            AlamatNavigasi.DestinasiDetail.routesWithArg,
+            DestinasiDetail.routesWithArg,
             arguments = listOf(
-                navArgument(AlamatNavigasi.DestinasiDetail.NIM) {
+                navArgument(DestinasiDetail.NIM) {
                     type = NavType.StringType
                 }
             )
         ) {
-            val nim = it.arguments?.getString(AlamatNavigasi.DestinasiDetail.NIM)
+            val nim = it.arguments?.getString(DestinasiDetail.NIM)
             nim?.let { nimValue ->
                 DetailMhsView(
                     onBack = {
                         navController.popBackStack()
                     },
                     onEditClick = {
-                        navController.navigate("${AlamatNavigasi.DestinasiUpdate.route}/$nimValue")
+                        navController.navigate("${DestinasiUpdate.route}/$nimValue")
                     },
                     modifier = modifier,
                     onDeleteClick = {
@@ -74,9 +76,9 @@ fun PengelolaHalaman(
         }
 
         composable(
-            AlamatNavigasi.DestinasiUpdate.routeWithArg,
+            DestinasiUpdate.routeWithArg,
             arguments = listOf(
-                navArgument(AlamatNavigasi.DestinasiUpdate.NIM) {
+                navArgument(DestinasiUpdate.NIM) {
                     type = NavType.StringType
                 }
             )

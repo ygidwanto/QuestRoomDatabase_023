@@ -21,6 +21,7 @@ import com.example.myapplication.ui.costumwidget.TopAppBar
 import com.example.myapplication.ui.viewmodel.HomeMhsViewModel
 import com.example.myapplication.ui.viewmodel.HomeUiState
 import com.example.myapplication.ui.viewmodel.PenyediaViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -30,6 +31,10 @@ fun HomeMhsView(
     onDetailClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val homeUiState by viewModel.homeUIState.collectAsState() // Mengamati UI State
+    val snackbarHostState = remember { SnackbarHostState() } // Snackbar Host
+    val coroutineScope = rememberCoroutineScope()
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -49,13 +54,14 @@ fun HomeMhsView(
                     contentDescription = "Tambah Mahasiswa"
                 )
             }
-        }
+        },
+        snackbarHost = { SnackbarHost(snackbarHostState) } // Menambahkan Snackbar Host
     ) { innerPadding ->
-        val homeUiState by viewModel.homeUIState.collectAsState()
-
         BodyHomeMhsView(
             homeUiState = homeUiState,
-            onClick = { onDetailClick(it) },
+            onClick = { nim -> onDetailClick(nim) },
+            snackbarHostState = snackbarHostState,
+            coroutineScope = coroutineScope,
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -65,11 +71,10 @@ fun HomeMhsView(
 fun BodyHomeMhsView(
     homeUiState: HomeUiState,
     onClick: (String) -> Unit = {},
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope,
     modifier: Modifier = Modifier
 ) {
-    val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-
     when {
         homeUiState.isLoading -> {
             // Menampilkan indikator loading
@@ -82,10 +87,13 @@ fun BodyHomeMhsView(
         }
 
         homeUiState.isError -> {
-            // Menampilkan pesan error
+            // Menampilkan pesan error menggunakan Snackbar
             LaunchedEffect(homeUiState.errorMessage) {
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(homeUiState.errorMessage)
+                    snackbarHostState.showSnackbar(
+                        message = homeUiState.errorMessage,
+                        actionLabel = "Dismiss"
+                    )
                 }
             }
         }

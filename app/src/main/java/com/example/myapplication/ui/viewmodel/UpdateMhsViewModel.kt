@@ -1,12 +1,16 @@
 package com.example.myapplication.ui.viewmodel
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.entity.Mahasiswa
 import com.example.myapplication.repository.RepositoryMhs
 import com.example.myapplication.ui.navigation.AlamatNavigasi
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class UpdateMhsViewModel(
@@ -14,13 +18,15 @@ class UpdateMhsViewModel(
     private val repositoryMhs: RepositoryMhs
 ) : ViewModel() {
 
-    var updateUIState by mutableStateOf(MhsUIState)
+    // Deklarasi state UI
+    var updateUIState by mutableStateOf(MhsUIState())
         private set
 
     private val _nim: String = checkNotNull(savedStateHandle[AlamatNavigasi.DestinasiUpdate.NIM])
 
     init {
         viewModelScope.launch {
+            // Inisialisasi data dari repository
             updateUIState = repositoryMhs.getMhs(_nim)
                 .filterNotNull()
                 .first()
@@ -57,25 +63,25 @@ class UpdateMhsViewModel(
                 try {
                     repositoryMhs.updateMhs(currentEvent.toMahasiswaEntity())
                     updateUIState = updateUIState.copy(
-                        snackBarMassage = "Data berhasil diupdate",
+                        snackBarMessage = "Data berhasil diupdate",
                         mahasiswaEvent = MahasiswaEvent(),
                         isEntryValid = FormErrorState()
                     )
                 } catch (e: Exception) {
                     updateUIState = updateUIState.copy(
-                        snackBarMassage = "Data gagal diupdate"
+                        snackBarMessage = "Data gagal diupdate"
                     )
                 }
             }
         } else {
             updateUIState = updateUIState.copy(
-                snackBarMassage = "Data gagal diupdate"
+                snackBarMessage = "Data gagal diupdate"
             )
         }
     }
 
     fun resetSnackBarMessage() {
-        updateUIState = updateUIState.copy(snackBarMassage = null)
+        updateUIState = updateUIState.copy(snackBarMessage = null)
     }
 
     fun Mahasiswa.toUiStateMhs(): MhsUIState = MhsUIState(

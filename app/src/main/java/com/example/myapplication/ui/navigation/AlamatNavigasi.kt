@@ -13,6 +13,7 @@ interface AlamatNavigasi {
     object DestinasiUpdate : AlamatNavigasi {
         override val route = "update"
         const val NIM = "nim"
-        val routeWithArg = "$route/ {$NIM}"
+        val routeWithArg = "$route/{$NIM}"
     }
+
 }
