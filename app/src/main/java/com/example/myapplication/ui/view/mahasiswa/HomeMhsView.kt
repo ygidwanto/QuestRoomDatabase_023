@@ -1,12 +1,6 @@
 package com.example.myapplication.ui.view.mahasiswa
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -14,20 +8,8 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -40,7 +22,6 @@ import com.example.myapplication.ui.viewmodel.HomeMhsViewModel
 import com.example.myapplication.ui.viewmodel.HomeUiState
 import com.example.myapplication.ui.viewmodel.PenyediaViewModel
 import kotlinx.coroutines.launch
-import java.lang.reflect.Modifier
 
 @Composable
 fun HomeMhsView(
@@ -48,13 +29,13 @@ fun HomeMhsView(
     onAddMhs: () -> Unit = {},
     onDetailClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
-){
-    Scaffold (
+) {
+    Scaffold(
         topBar = {
             TopAppBar(
                 judul = "Daftar Mahasiswa",
                 showBackButton = false,
-                onBack = {},
+                onBack = {}
             )
         },
         floatingActionButton = {
@@ -62,20 +43,19 @@ fun HomeMhsView(
                 onClick = onAddMhs,
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(16.dp)
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "Tambah Mahasiswa"
                 )
             }
         }
-    ){innerPadding ->
+    ) { innerPadding ->
         val homeUiState by viewModel.homeUIState.collectAsState()
 
         BodyHomeMhsView(
             homeUiState = homeUiState,
-            onClick = {onDetailClick(it)
-            },
+            onClick = { onDetailClick(it) },
             modifier = Modifier.padding(innerPadding)
         )
     }
@@ -84,57 +64,52 @@ fun HomeMhsView(
 @Composable
 fun BodyHomeMhsView(
     homeUiState: HomeUiState,
-    onClick: (String) -> Unit = { },
+    onClick: (String) -> Unit = {},
     modifier: Modifier = Modifier
-){
+) {
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
     when {
         homeUiState.isLoading -> {
-            //menampilkan indikator loading
+            // Menampilkan indikator loading
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
+            ) {
                 CircularProgressIndicator()
             }
         }
 
         homeUiState.isError -> {
-            //menampilkan pesan error
-            LaunchedEffect(homeUiState.errorMessage)
-            {
-                homeUiState.errorMessage?.let { message ->
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(message) // Tampilkan Snackbar
-                    }
+            // Menampilkan pesan error
+            LaunchedEffect(homeUiState.errorMessage) {
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(homeUiState.errorMessage)
                 }
             }
         }
 
         homeUiState.listMhs.isEmpty() -> {
-            //menampilkan pesan jika data kosong
+            // Menampilkan pesan jika data kosong
             Box(
                 modifier = modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
-            ){
-                Text(text = "Tidak ada data Mahasiswa",
+            ) {
+                Text(
+                    text = "Tidak ada data Mahasiswa",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(16.dp))
-
+                    modifier = Modifier.padding(16.dp)
+                )
             }
         }
 
         else -> {
+            // Menampilkan daftar mahasiswa
             ListMahasiswa(
                 listMhs = homeUiState.listMhs,
-                onClick = {
-                    onClick(it)
-                    println(
-                        it
-                    )
-                },
+                onClick = onClick,
                 modifier = modifier
             )
         }
@@ -149,16 +124,15 @@ fun ListMahasiswa(
 ) {
     LazyColumn(
         modifier = modifier
+            .fillMaxSize()
+            .padding(8.dp)
     ) {
-        items(
-            items() = listMhs,
-            itemContent = { mhs ->
-                CardMhs (
-                    mhs = mhs,
-                    onClick = { onClick(mhs.nim)}
-                )
-            }
-        )
+        items(listMhs) { mhs ->
+            CardMhs(
+                mhs = mhs,
+                onClick = { onClick(mhs.nim) }
+            )
+        }
     }
 }
 
@@ -167,7 +141,7 @@ fun ListMahasiswa(
 fun CardMhs(
     mhs: Mahasiswa,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit = { }
+    onClick: () -> Unit = {}
 ) {
     Card(
         onClick = onClick,
@@ -183,7 +157,7 @@ fun CardMhs(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(imageVector = Icons.Filled.Person, contentDescription = "")
-                Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = mhs.nama,
                     fontWeight = FontWeight.Bold,
@@ -195,7 +169,7 @@ fun CardMhs(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(imageVector = Icons.Filled.DateRange, contentDescription = "")
-                Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = mhs.nim,
                     fontWeight = FontWeight.Bold,
@@ -205,9 +179,9 @@ fun CardMhs(
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Icon(imageVector = Icons.Filled.Home, contentDescription = "")
-                Spacer(modifier = Modifier.padding(4.dp))
+                Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = mhs.kelas,
                     fontWeight = FontWeight.Bold
@@ -216,6 +190,3 @@ fun CardMhs(
         }
     }
 }
-
-
-
