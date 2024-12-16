@@ -2,6 +2,7 @@ package com.example.myapplication.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -13,6 +14,17 @@ object PenyediaViewModel {
         initializer {
             MahasiswaViewModel(
                 KrsApp().containerApp.repositoryMhs
+            )
+        }
+        initializer {
+            HomeMhsViewModel(
+                KrsApp().containerApp.repositoryMhs,
+            )
+        }
+        initializer {
+            UpdateMhsViewModel(
+                createSavedStateHandle(),
+                KrsApp().containerApp.repositoryMhs,
             )
         }
     }
