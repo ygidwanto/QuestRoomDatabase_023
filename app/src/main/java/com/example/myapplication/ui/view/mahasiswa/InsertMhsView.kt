@@ -1,6 +1,5 @@
-package com.example.myapplication.ui.viewmahasiswa
+package com.example.myapplication.ui.view.mahasiswa
 
-import android.R.attr.padding
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.room.util.TableInfo
 import com.example.myapplication.ui.costumwidget.TopAppBar
 import com.example.myapplication.ui.navigation.AlamatNavigasi
 import com.example.myapplication.ui.viewmodel.FormErrorState
@@ -34,7 +32,6 @@ import com.example.myapplication.ui.viewmodel.MahasiswaEvent
 import com.example.myapplication.ui.viewmodel.MahasiswaViewModel
 import com.example.myapplication.ui.viewmodel.MhsUIState
 import com.example.myapplication.ui.viewmodel.PenyediaViewModel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 
