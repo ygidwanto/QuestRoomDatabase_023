@@ -2,7 +2,7 @@ package com.example.myapplication.ui.navigation
 
 interface AlamatNavigasi {
     val route: String
-    object  DestinationHome : AlamatNavigasi {
+    object  DestinasiHome : AlamatNavigasi {
         override val route = "home"
     }
     object DestinasiDetail : AlamatNavigasi{
